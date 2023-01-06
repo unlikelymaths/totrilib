@@ -1,0 +1,28 @@
+version: "3.8"
+services:
+  totrilib-dev:
+    container_name: totrilib-dev
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: dev
+    image: totrilib:dev
+    network_mode: "host"
+    shm_size: '8gb'
+    volumes:
+      - .:/workspace/totrilib
+      - totrilib-dev-vscode:/root/.vscode-server
+    environment:
+      - NVIDIA_DRIVER_CAPABILITIES=utility,compute,graphics
+      - CMAKE_EXPORT_COMPILE_COMMANDS=ON
+      - CMAKE_BUILD_PARALLEL_LEVEL=16
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    command: "/bin/bash --init-file /workspace/totrilib/.vscode/setup.sh"
+    stdin_open: true
+    tty: true
+volumes:
+  totrilib-dev-vscode:
